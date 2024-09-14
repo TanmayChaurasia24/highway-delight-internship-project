@@ -1,10 +1,20 @@
 import React from 'react';
-
+import  { BrowserRouter, Route, Routes } from 'react-router-dom';
+import Home from './components/Dashboard';
+import Signup from './components/Signup';
+import Login from './components/Login';
 const App: React.FC = () => {
   return (
-    <div className="text-center">
-      <h1 className="">Hello, Tailwind with React + TypeScript!</h1>
-    </div>
+    <>
+      <BrowserRouter>
+        <Routes>
+
+          <Route path='/signup' element={<Signup></Signup>}></Route>
+          <Route path='/login' element={<Login></Login>}></Route>
+          <Route path='/home' element={<Home></Home>}></Route>
+        </Routes>
+      </BrowserRouter>
+    </>
   );
 };
 

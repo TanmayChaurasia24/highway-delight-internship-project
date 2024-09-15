@@ -3,8 +3,8 @@ import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({
   host: process.env.MAIL_HOST,
-  port: Number(process.env.MAIL_PORT),
-  secure: process.env.MAIL_PORT === '465',
+  port: Number(process.env.MAIL_PORT), // Convert to number
+  secure: true, // Set to true if using SSL (port 465)
   auth: {
     user: process.env.MAIL_USER,
     pass: process.env.MAIL_PASS,
@@ -14,11 +14,12 @@ const transporter = nodemailer.createTransport({
 export const sendOtpEmail = async (req: Request, res: Response) => {
   const { email, otp } = req.body;
 
-  console.log(email,otp);
+  console.log(`Sending OTP to ${email} with OTP ${otp}`);
   
   try {
-    await transporter.sendMail({
-      from: '"Your App Name" <your-email@example.com>',
+    const info = await transporter.sendMail({
+      from: process.env.
+      MAIL_HOST,
       to: email,
       subject: 'Your OTP Code for Verification',
       text: `Your OTP code is ${otp}. Please use this code to verify your email address.`,
@@ -29,6 +30,8 @@ export const sendOtpEmail = async (req: Request, res: Response) => {
         <p>Thank you!</p>
       `,
     });
+
+    console.log('Email sent:', info.response);
     res.status(200).json({ message: 'OTP sent successfully' });
   } catch (error) {
     console.error('Error sending OTP email:', error);

@@ -2,7 +2,6 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 import mongoconnect from './db/db';
 import Userroutes from "./routes/User.routes";
-import Emailroutes from "./routes/Email.route";
 
 mongoconnect();
 
@@ -16,7 +15,6 @@ app.use(cors({
 }));
 
 app.use("/api/users", Userroutes);
-app.use("/api/email", Emailroutes);
 
 // Start the server
 app.listen(PORT, () => {

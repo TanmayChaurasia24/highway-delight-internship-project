@@ -3,52 +3,64 @@ import { Express, Request, Response} from "express";
 import bcrypt from "bcrypt";
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken"
+import { sendOtpEmail } from "./Email.controller";
 
-export const signup = async(req: Request, res: Response) => {
+export const signup = async (req: Request, res: Response) => {
     const detail = req.body;
     console.log(detail);
 
     try {
-        const isexists = await User.findOne({email:detail.email});
-        if(isexists) {
-            res.json({
-                message: "user already exists",
-            }).status(500);
+        // Check if user already exists
+        const isExists = await User.findOne({ email: detail.email });
+        if (isExists) {
+            return res.status(400).json({
+                message: "User already exists",
+            });
         }
-        
-        const hashedpass = await bcrypt.hash(detail.password,10);
-        console.log(hashedpass);
 
-        const newuser = {
+        // Send OTP email
+        await sendOtpEmail({ email: detail.email, otp: 122331 });
+
+        // Hash the password
+        const hashedPass = await bcrypt.hash(detail.password, 10);
+        console.log(hashedPass);
+
+        // Create new user
+        const newUser = {
             firstname: detail.firstname,
             lastname: detail.lastname,
             email: detail.email,
-            password: hashedpass
+            password: hashedPass,
+        };
+
+        console.log(newUser);
+
+        const savedUser = await User.create(newUser);
+
+        // Check for token secret
+        if (!process.env.TOKEN_SECRET) {
+            return res.status(500).json({ message: "Internal server error" });
         }
 
-        console.log(newuser);
+        // Generate JWT token
+        const token = jwt.sign({ id: savedUser._id }, process.env.TOKEN_SECRET);
 
-        const saveduser = await User.create(newuser);
-
-        if(!process.env.TOKEN_SECRET) {
-            return res.json({message:"internal server error"}).status(500);
-        }
-
-        const token = jwt.sign({id:saveduser._id},process.env.TOKEN_SECRET);
-       
+        // Respond with success
         return res.status(201).json({
-            message: "user created sucessfully",
-            saveduser: saveduser,
-            token: token
+            message: "User created successfully",
+            savedUser: savedUser,
+            token: token,
+            status: 200,
         });
-    } catch (error:any) {
-        console.log("error in creating user", error.message);
+    } catch (error: any) {
+        console.error("Error in creating user", error.message);
         return res.status(500).json({
-            message: "error while doing signup",
-            error: error.message
-        })
+            message: "Error while signing up",
+            error: error.message,
+        });
     }
-}
+};
+
 
 
 
@@ -86,6 +98,7 @@ export const login = async(req: Request, res: Response) => {
         res.status(201).json({
             message: "login success",
             success: true,
+            user: isexists
         })
     } catch (error) {
         console.error('Error during login:', error);

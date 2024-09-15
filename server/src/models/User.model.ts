@@ -5,6 +5,7 @@ interface Usermodeltype {
     lastname: string;
     email: string;
     password: string;
+    isverified?: boolean
 }
 
 const Usermodel = new Schema<Usermodeltype>({
@@ -24,6 +25,10 @@ const Usermodel = new Schema<Usermodeltype>({
     password: {
         type: String,
         required: true
+    },
+    isverified: {
+        type:Boolean,
+        default: false
     }
 });
 

@@ -1,5 +1,9 @@
-import express, {Request,Response} from "express"
-import cors from "cors"
+import express, { Request, Response } from 'express';
+import cors from 'cors';
+import mongoconnect from './db/db';
+import Userroutes from "./routes/User.routes"
+
+mongoconnect();
 
 const PORT = 8000;
 const app = express();
@@ -7,12 +11,9 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-app.get('/',(req:Request,res:Response) => {
-    res.send("hello world");
-})
+app.use("/api/users",Userroutes)
 
-
-app.listen(PORT,() => {
-    console.log(`server is running on port 8000`);
-    
-})
+// Start the server
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});

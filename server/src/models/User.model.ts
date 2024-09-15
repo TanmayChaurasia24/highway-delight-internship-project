@@ -27,5 +27,5 @@ const Usermodel = new Schema<Usermodeltype>({
     }
 });
 
-const User = model<Usermodeltype>('User', Usermodel);
+const User = model<Usermodeltype>('Userhighway', Usermodel);
 export default User;
